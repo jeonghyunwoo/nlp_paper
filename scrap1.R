@@ -23,7 +23,8 @@ for(i in seq(1,180,10)){
 hrefx = flatten_chr(hrefs)
 time_extract = function(url){
   read_html(url) %>% 
-    html_node('span.date') %>% 
+    #html_node('span.date') %>% 
+    html_nodes('.contentSectionDetails > span') %>%
     html_text() %>% 
     str_remove_all('\\-') %>% 
     str_trim()
