@@ -64,7 +64,7 @@ def goog_news(sch_word,yyyymm,pages=3):
         except:
             text.append('')
 
-    news = pd.DataFrame({'title':title,'date':date,'wkday':wd,'text':text,'press':press})
+    news = pd.DataFrame({'mon':yyyymm,'keyword':sch_word,'title':title,'date':date,'wkday':wd,'text':text,'press':press})
     news = news.loc[news.text!='']
     news = news.drop_duplicates()
     news.reset_index(drop=True,inplace=True)
