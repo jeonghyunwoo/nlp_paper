@@ -1,3 +1,4 @@
+# http://rankandfiled.com : edgar 시각화 사이트 
 library(tidyverse)
 library(edgar)
 a <- getFilings('1067983','13F-HR',2019,downl.permit = 'n')
@@ -23,9 +24,11 @@ a %>% html_nodes('infotable') %>%
 # investmentdiscretion
 # othermanager
 # votingauthority
+a <- getFilings('1067983','13F-HR',2019,downl.permit = 'n')
 fn = list.files('Edgar filings_full text/Form 13F-HR/1067983',full.names = T)
 fn1 = str_replace_all(fn,'.txt','.xml')
 walk2(fn,fn1,~file.rename(.x,.y))
+library(rvest)
 info = read_html(fn1[3]) %>% 
   html_nodes('infotable')
 # issuer = html_nodes(info,'nameofissuer') %>% html_text()
@@ -45,3 +48,17 @@ filter(infod,titleofclass=='COM') %>%
   geom_col(fill='steelblue')+
   scale_y_continuous(labels = function(x) x/10000)+
   theme(axis.text.x = element_text(angle=45,hjust=1))
+# 
+library(pacman)
+p_load(tidyverse,edgar,rvest)
+senti = getSentiment('1067983',form.type='10-K',filing.year = 2017:2019)
+#
+getMasterIndex(2019) # 2019에 생성된 edgar 전체 파일내역이 조회된다 (회사,fileform 등)
+# 
+load('Master Indexes/2019master.rda') # 생성된 결과는 여기에 저장되고 load시 year.master가 생성된다 
+# year.master에서 찾고싶은 회사, 파일(13F-HR) 찾으면 된다 
+a = year.master
+dim(a) # 673871 6
+names(a) # cik, company.name, form.type, date.filed, edgar.link, quarter
+mutate(a,cname = tolower(company.name)) %>% 
+  filter(str_detect(cname,'soros'),form.type=='13F-HR')
