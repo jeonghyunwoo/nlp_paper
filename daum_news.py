@@ -6,6 +6,7 @@ import json
 from urllib.parse import quote_plus
 from newspaper import Article
 import re, itertools
+from gensim.summarization import summarize
 
 # nscrap : 뉴스스크랩 
 # relswd : 연관검색어 
@@ -19,6 +20,7 @@ def daum_news(검색어,검색월,페이지수=3):
     date = []
     wkday = []
     press = []
+    summary = []
     
     for page in range(페이지수):
         p = page+1
@@ -56,8 +58,10 @@ def daum_news(검색어,검색월,페이지수=3):
 
             try:
                 txt = b.text.replace('\n','')
+                smry = summarize(txt, word_count = 100)
             except:
                 txt = ''
+                smry = ''
 
             try:
                 tit = b.title
@@ -78,6 +82,7 @@ def daum_news(검색어,검색월,페이지수=3):
 
             title.append(tit)
             news.append(txt)
+            summary.append(smry)
             author.append(aut)
             wkday.append(wkd)
 
