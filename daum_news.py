@@ -97,6 +97,7 @@ def daum_news(검색어,검색월,페이지수=3):
                  'date':date,
                  'author':author,
                  'news':news,
+                 'smry':summary,
                  'press':press})
 
     #print(f'{검색어} 검색완료')
