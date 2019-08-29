@@ -13,9 +13,10 @@ from nltk.corpus import stopwords
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from selenium import webdriver
+from gensim.summarization import summarize # 뉴스요약용 
 
 # selenium version으로 새로 만든다
-def goog_news(sch_word,yyyymm,pages=3):
+def goog_news(sch_word,yyyymm,pages=3,smry_words=50):
     quo_word = quote_plus(sch_word)
     mon = pd.to_datetime(yyyymm,format='%Y%m')
     mon_max = mon+pd.DateOffset(months=1)-pd.DateOffset(days=1)
@@ -35,7 +36,7 @@ def goog_news(sch_word,yyyymm,pages=3):
     driver.close()
     links = list(itertools.chain(*links))
     
-    title,date,wd,text,press = [],[],[],[],[]
+    title,date,wd,text,smry,press = [],[],[],[],[],[
   
     for h in links:
         press.append(re.split('/',h)[2])
@@ -61,10 +62,13 @@ def goog_news(sch_word,yyyymm,pages=3):
 
         try:
             text.append(a.text)
+            smry.append(summarize(a.text,word_count=smry_words))
         except:
             text.append('')
+            smry.append('')
 
-    news = pd.DataFrame({'mon':yyyymm,'keyword':sch_word,'title':title,'date':date,'wkday':wd,'text':text,'press':press})
+    news = pd.DataFrame({'mon':yyyymm,'keyword':sch_word,'title':title,'date':date,'wkday':wd,
+                         'text':text,'smry':smry,'press':press})
     news = news.loc[news.text!='']
     news = news.drop_duplicates()
     news.reset_index(drop=True,inplace=True)
