@@ -36,7 +36,7 @@ def goog_news(sch_word,yyyymm,pages=3,smry_words=50):
     driver.close()
     links = list(itertools.chain(*links))
     
-    title,date,wd,text,smry,press = [],[],[],[],[],[
+    title,date,wd,text,smry,press = [],[],[],[],[],[]
   
     for h in links:
         press.append(re.split('/',h)[2])
