@@ -21,9 +21,21 @@ def goog_news(sch_word,yyyymm,pages=3,smry_words=50):
     mon = pd.to_datetime(yyyymm,format='%Y%m')
     mon_max = mon+pd.DateOffset(months=1)-pd.DateOffset(days=1)
     mrng = list(map(lambda x: x.strftime('%m/%d/%Y'),[mon,mon_max]))
-  
+    
+    # rescnt 부분
     links = []
     driver = webdriver.Chrome('driver/chromedriver.exe')
+    urs0 = f"url = f"https://www.google.com/search?q={quo_word}&safe=active&rlz=1C1SQJL_koKR831KR832&biw=763&bih=625&source=lnt&tbs=cdr%3A1%2Ccd_min%3A{mrng[0]}%2Ccd_max%3A{mrng[1]}&tbm=nws"
+    driver.get(url)
+    html0 = driver.page_source
+    try:
+        a0 = soup(html,'lxml')
+        rescnt = a0.find('div',id='resultStat').get_text()
+    except:
+        rescnt = ''
+    driver.close()
+    # rescnt 부분끝
+        
     for i in np.arange(0,pages*10,10):
         url = f"https://www.google.com/search?q={quo_word}&safe=active&rlz=1C1SQJL_koKR831KR832&biw=763&bih=625&source=lnt&tbs=cdr%3A1%2Ccd_min%3A{mrng[0]}%2Ccd_max%3A{mrng[1]}&tbm=nws&start={i}"  
         driver.get(url)
@@ -67,7 +79,7 @@ def goog_news(sch_word,yyyymm,pages=3,smry_words=50):
             text.append('')
             smry.append('')
 
-    news = pd.DataFrame({'mon':yyyymm,'keyword':sch_word,'title':title,'date':date,'wkday':wd,
+    news = pd.DataFrame({'mon':yyyymm,'keyword':sch_word,'rescnt':rescnt,'title':title,'date':date,'wkday':wd,
                          'text':text,'smry':smry,'press':press})
     news = news.loc[news.text!='']
     news = news.drop_duplicates()
